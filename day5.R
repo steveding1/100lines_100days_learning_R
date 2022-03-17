@@ -28,7 +28,7 @@ qqplot(x=randu$x,y=y)
 ?qchisq
 plot(qchisq(ppoints(30),df=3))
 qqplot(qnorm(ppoints(30)), qchisq(ppoints(30),df=3))
-#“heavy tails” qcauchy
+#âheavy tailsâ qcauchy
 
 FinData <- read_excel("D:/MScFE 610 ECON_Data M1 and M2.xlsx", 
                       col_types = c("date", "numeric", "numeric"
@@ -71,8 +71,21 @@ return.spy=
   (tail(SPY$SPY.Adjusted,1)[[1]]-SPY$SPY.Adjusted[[1]])/
   SPY$SPY.Adjusted[[1]]
 
-#Rf+βi(ERm−Rf)
+#Rf+Î²i(ERmâRf)
 Rf = 0.78/100
 Er = Rf+(return.spy-Rf)*1.19#AAPL's BETA
 cat('Expected AAPL one year return is (should be larger than)', 
     Er * 100,  "%")
+
+chart_Series(AAPL)
+library(ggplot)
+AAPL %>%
+  ggplot(aes(x = colnames(), y = AAPL.Adjusted)) +
+  geom_line() +
+  theme_classic() +
+  labs(x = 'Date',
+       y = "Adjusted Price",
+       title = "Apple price chart") +
+  scale_y_continuous(breaks = seq(0,300,10))
+
+4.5/(5000*1.645)
