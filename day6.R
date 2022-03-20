@@ -1,4 +1,4 @@
-#found an awsome site for R books https://bookdown.org/
+#found an awesome site for R books https://bookdown.org/
 a <- dnorm(3)
 rnorm(3)
 ?dnorm
@@ -9,6 +9,7 @@ A%*%t(A)
 c(12, 5, 27)[a=1]
 
 library(tidyverse)
+library(ggplot2)
 #statistical transformation
 ggplot(diamonds)+
   stat_count(aes(cut))
@@ -53,8 +54,8 @@ ggplot(data = diamonds) +
   geom_bar(aes(x = cut, y = ..count.. / sum(..count..), fill = color))
 #position = "identity" will place each object exactly where it falls in the context of the graph.
 for (posi in c('identity','dodge','fill')){
-  ggplot(data = diamonds) + 
-    geom_bar(aes(x = cut, fill = color,alpha = 1/5), position = posi)
+  print(ggplot(data = diamonds) + 
+    geom_bar(aes(x = cut, fill = color,alpha = 1/5), position = posi))
 }
 
 for(i in 1:10){print(i)}
