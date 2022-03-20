@@ -11,21 +11,35 @@ summary(regression) #tvalue = estimate / std error
 
 #Formulate the Fama-French regression 
 library(tibble)
+library(dplyr)
+library(tidyquant)
+
+#readcsv
+fama_factors <- read.csv('fama_factors_2019.csv')
 fama_factors <- tibble(fama_factors)
 fama_factors$yyyymmdd <- as.Date(fama_factors$yyyymmdd,format = "%m/%d/%Y")
 
 # Downloading Apple price using quantmod
-library(tidyquant)
 options("getSymbols.warning4.0"=FALSE)
 options("getSymbols.yahoo.warning"=FALSE)
 
 getSymbols("AAPL", from = min(fama_factors$yyyymmdd),
            to = max(fama_factors$yyyymmdd),warnings = FALSE,
            auto.assign = TRUE)
-length(AAPL$AAPL.Adjusted)==length(fama_factors$yyyymmdd)
-library(dplyr)
-typeof(AAPL)
-str(as.data.frame(AAPL)["AAPL.Adjusted"])
-AAPL=cbind(yyyymmdd = index(AAPL),as.data.frame(AAPL)["AAPL.Adjusted"])
-FFAAPL <- inner_join(fama_factors,tibble(AAPL),by="yyyymmdd")
+
+#caculate daily returns
+AAPL.return <- diff(AAPL$AAPL.Adjusted)/lag(AAPL$AAPL.Adjusted)
+str(AAPL.return)
+AAPL.return <- AAPL.return[!is.na(AAPL.return)]
+length(AAPL.return)-length(fama_factors$yyyymmdd)
+
+AAPL.return=cbind(yyyymmdd = index(AAPL.return),as.data.frame(AAPL.return))
+AAPL.return=tibble(AAPL.return)
+FFAAPL <- inner_join(fama_factors,tibble(AAPL.return),by="yyyymmdd")
 lm(formula = (FFAAPL$AAPL.Adjusted-FFAAPL$RF)~FFAAPL$Mkt.RF+FFAAPL$SMB+FFAAPL$HML)
+
+Y <- -0.007432 +FFAAPL$Mkt.RF*-0.002666+0.014745*FFAAPL$SMB+FFAAPL$HML*-0.001722+FFAAPL$RF
+plot(AAPL.return$AAPL.Adjusted,col='red',type = "b",pch = 18,alpha=0.2)
+lines(Y, col = "blue", type = "b", lty = 2)
+legend("bottomright", legend=c("real", "FF model"),
+       col=c("red", "blue"), lty = 1:2, cex=1)
